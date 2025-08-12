@@ -1,3 +1,9 @@
-# Ví dụ: user myuser chỉ đọc/ghi trong myhome/#
-user myuser
-topic readwrite myhome/#
+# Admin có quyền full
+user admin
+topic readwrite #
+
+# User thường chỉ đọc/ghi topic riêng
+user client
+topic readwrite tst/#
+topic read all/#
+topic write DM/#
