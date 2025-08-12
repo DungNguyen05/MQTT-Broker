@@ -1,0 +1,11 @@
+{
+    email {$LE_EMAIL}
+}
+
+{$DOMAIN} {
+    @ws {
+        header Connection *Upgrade*
+        header Upgrade websocket
+    }
+    reverse_proxy @ws mosquitto:9001
+}

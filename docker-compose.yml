@@ -1,0 +1,43 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+      - "${MQTT_PORT:-1883}:1883"     # MQTT TCP
+      - "${MQTT_WS_PORT:-9001}:9001"  # MQTT WebSocket
+    volumes:
+      # Chọn 1 trong 2 cấu hình bên dưới:
+      # (A) Production (CÓ user/pass):
+      - ./mosquitto/conf/mosquitto.secure.conf:/mosquitto/config/mosquitto.conf:ro
+      # (B) Development (KHÔNG cần user/pass - anonymous):
+      # - ./mosquitto/conf/mosquitto.dev.conf:/mosquitto/config/mosquitto.conf:ro
+
+      # Đường dẫn đã đơn giản hóa: passwd & acl nằm ngay trong /mosquitto
+      - ./mosquitto/passwd:/mosquitto/passwd:ro
+      - ./mosquitto/acl:/mosquitto/acl:ro
+
+      # Persistence & log
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+
+  # (Tuỳ chọn) Reverse proxy WSS + TLS với Let's Encrypt
+  # caddy:
+  #   image: caddy:2
+  #   container_name: caddy
+  #   restart: unless-stopped
+  #   depends_on: [mosquitto]
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./reverse-proxy/Caddyfile:/etc/caddy/Caddyfile:ro
+  #     - caddy_data:/data
+  #     - caddy_config:/config
+  #   environment:
+  #     - DOMAIN=${DOMAIN}
+  #     - LE_EMAIL=${LE_EMAIL}
+
+volumes:
+  caddy_data: {}
+  caddy_config: {}
